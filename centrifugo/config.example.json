@@ -7,6 +7,8 @@
   "allowed_origins": ["*"],
 
   "proxy_rpc_endpoint": "http://host.docker.internal:8080/v1/centrifugo/rpc",
+  "proxy_include_connection_meta": true,
+  "proxy_http_headers": ["X-Centrifugo-User-Id"],
 
   "allow_anonymous_connect_without_token": true,
 
