@@ -17,10 +17,16 @@ iac/
 
 ## Quick Setup
 
+### AWS Setup (Before Terraform)
+
+See `SETUP-AWS.md` for required AWS/GitHub setup steps.
+
 ### Terraform (AWS)
 
+Terraform now lives at repo root: `../terraform`.
+
 ```bash
-cd terraform
+cd ../terraform
 terraform init
 terraform plan -var="centrifugo_secret=SECRET" -var="centrifugo_api_key=API_KEY" -var="frontend_bucket_name=BUCKET"
 terraform apply -var="centrifugo_secret=SECRET" -var="centrifugo_api_key=API_KEY" -var="frontend_bucket_name=BUCKET"
