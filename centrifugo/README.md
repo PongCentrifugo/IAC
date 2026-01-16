@@ -11,7 +11,7 @@ Centrifugo WebSocket server for Pong game.
 cp config.example.json config.json
 # Edit config.json - set your secrets
 
-# 2. Start
+# 2. Start (requires Redis running from ../redis)
 docker-compose up -d
 
 # 3. Check logs

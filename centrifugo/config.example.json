@@ -6,6 +6,10 @@
   "admin_secret": "admin-secret",
   "allowed_origins": ["*"],
 
+  "engine": "redis",
+  "redis_address": "redis://pong-redis:6379/0",
+  "redis_prefix": "centrifugo",
+
   "proxy_rpc_endpoint": "http://host.docker.internal:8080/v1/centrifugo/rpc",
   "proxy_include_connection_meta": true,
   "proxy_http_headers": ["X-Centrifugo-User-Id"],
@@ -18,6 +22,9 @@
       "history_size": 10,
       "history_ttl": "300s",
       "force_recovery": true,
+      "presence": true,
+      "join_leave": true,
+      "force_push_join_leave": true,
       "allow_subscribe_for_anonymous": true,
       "allow_subscribe_for_client": true,
       "allow_history_for_anonymous": true,
@@ -30,6 +37,9 @@
       "history_size": 0,
       "history_ttl": "0s",
       "force_recovery": false,
+      "presence": true,
+      "join_leave": true,
+      "force_push_join_leave": true,
       "allow_subscribe_for_anonymous": false
     }
   ]

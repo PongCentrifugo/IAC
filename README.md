@@ -6,15 +6,25 @@ Infrastructure configuration for Pong game.
 
 ```
 iac/
-└── centrifugo/          # Centrifugo WebSocket server
+├── centrifugo/          # Centrifugo WebSocket server
+│   ├── docker-compose.yml
+│   ├── config.example.json
+│   └── README.md
+└── redis/               # Redis broker/presence for Centrifugo + backend
     ├── docker-compose.yml
-    ├── config.example.json
     └── README.md
 ```
 
 ## Quick Setup
 
-### 1. Start Centrifugo
+### 1. Start Redis
+
+```bash
+cd redis
+docker-compose up -d
+```
+
+### 2. Start Centrifugo
 
 ```bash
 cd centrifugo
@@ -23,7 +33,7 @@ cp config.example.json config.json
 docker-compose up -d
 ```
 
-### 2. Configure Backend
+### 3. Configure Backend
 
 ```bash
 cd ../pong-backend
@@ -31,7 +41,7 @@ cp .env.example .env
 # Edit .env - match secrets with Centrifugo config
 ```
 
-### 3. Start Backend
+### 4. Start Backend
 
 ```bash
 # Local
