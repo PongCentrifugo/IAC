@@ -17,6 +17,15 @@ iac/
 
 ## Quick Setup
 
+### Terraform (AWS)
+
+```bash
+cd terraform
+terraform init
+terraform plan -var="centrifugo_secret=SECRET" -var="centrifugo_api_key=API_KEY" -var="frontend_bucket_name=BUCKET"
+terraform apply -var="centrifugo_secret=SECRET" -var="centrifugo_api_key=API_KEY" -var="frontend_bucket_name=BUCKET"
+```
+
 ### 1. Start Redis
 
 ```bash
