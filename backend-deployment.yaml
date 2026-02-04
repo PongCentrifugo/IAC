@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pong-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pong-backend
+  template:
+    metadata:
+      labels:
+        app: pong-backend
+    spec:
+      containers:
+        - name: backend
+          image: ${ECR_BACKEND_IMAGE}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: CENTRIFUGO_API_URL
+              value: ${CENTRIFUGO_API_URL}
+            - name: CENTRIFUGO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pong-secrets
+                  key: CENTRIFUGO_API_KEY
+            - name: CENTRIFUGO_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pong-secrets
+                  key: CENTRIFUGO_SECRET
+            - name: TOKEN_TTL
+              value: "15m"
+            - name: REDIS_URL
+              value: ${REDIS_URL}
+            - name: REDIS_PUBSUB_PATTERN
+              value: "centrifugo.*"
+            - name: REDIS_PREFIX
+              value: "centrifugo"
+            - name: REDIS_PRESENCE_INTERVAL
+              value: "2s"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pong-backend
+spec:
+  type: LoadBalancer
+  selector:
+    app: pong-backend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

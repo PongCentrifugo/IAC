@@ -1,5 +1,0 @@
-# Centrifugo runtime config
-config.json
-
-# Environment files
-.env

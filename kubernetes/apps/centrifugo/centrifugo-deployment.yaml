@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pong-centrifugo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pong-centrifugo
+  template:
+    metadata:
+      labels:
+        app: pong-centrifugo
+    spec:
+      containers:
+        - name: centrifugo
+          image: centrifugo/centrifugo:v5
+          ports:
+            - containerPort: 8000
+          env:
+            - name: CENTRIFUGO_CONFIG_JSON
+              value: |
+                {
+                  "token_hmac_secret_key": "${CENTRIFUGO_SECRET}",
+                  "api_key": "${CENTRIFUGO_API_KEY}",
+                  "admin": true,
+                  "admin_password": "admin",
+                  "admin_secret": "admin-secret",
+                  "allowed_origins": ["*"],
+                  "engine": "redis",
+                  "redis_address": "${REDIS_URL}",
+                  "redis_prefix": "centrifugo",
+                  "proxy_rpc_endpoint": "${CENTRIFUGO_RPC_URL}",
+                  "proxy_include_connection_meta": true,
+                  "proxy_http_headers": ["X-Centrifugo-User-Id"],
+                  "allow_anonymous_connect_without_token": true,
+                  "namespaces": [
+                    {
+                      "name": "pong_public",
+                      "history_size": 10,
+                      "history_ttl": "300s",
+                      "force_recovery": true,
+                      "presence": true,
+                      "join_leave": true,
+                      "force_push_join_leave": true,
+                      "allow_subscribe_for_anonymous": true,
+                      "allow_subscribe_for_client": true,
+                      "allow_history_for_anonymous": true,
+                      "allow_history_for_client": true,
+                      "allow_publish_for_anonymous": false,
+                      "allow_presence_for_anonymous": false
+                    },
+                    {
+                      "name": "pong_private",
+                      "history_size": 0,
+                      "history_ttl": "0s",
+                      "force_recovery": false,
+                      "presence": true,
+                      "join_leave": true,
+                      "force_push_join_leave": true,
+                      "allow_subscribe_for_anonymous": false,
+                      "allow_publish_for_anonymous": false
+                    }
+                  ]
+                }
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "$CENTRIFUGO_CONFIG_JSON" > /centrifugo/config.json
+              centrifugo --config=/centrifugo/config.json
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pong-centrifugo
+spec:
+  type: LoadBalancer
+  selector:
+    app: pong-centrifugo
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000
