@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: pong
+
+resources:
+- namespace.yaml
+- backend/deployment.yaml
+- backend/service.yaml
+- centrifugo/deployment.yaml
+- centrifugo/service.yaml
+- cloudflared/deployment.yaml

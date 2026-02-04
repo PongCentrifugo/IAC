@@ -1,0 +1,52 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vault
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: hashicorp
+  namespace: vault
+spec:
+  interval: 24h
+  url: https://helm.releases.hashicorp.com
+---
+# HCP Vault Agent Injector only (no Vault server)
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: vault
+  namespace: vault
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: vault
+      version: '>=0.28.0'
+      sourceRef:
+        kind: HelmRepository
+        name: hashicorp
+        namespace: vault
+      interval: 12h
+  values:
+    # Disable Vault server (using HCP Vault instead)
+    server:
+      enabled: false
+    
+    # Enable only the injector to connect to HCP Vault
+    injector:
+      enabled: true
+      replicas: 2
+      externalVaultAddr: "${HCP_VAULT_ADDR}"  # Will be set via Kustomize or ConfigMap
+      resources:
+        requests:
+          memory: 256Mi
+          cpu: 250m
+        limits:
+          memory: 512Mi
+          cpu: 500m
+      
+      # Auth path for Kubernetes
+      authPath: "auth/kubernetes"

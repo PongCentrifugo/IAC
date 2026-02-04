@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+  namespace: pong
+  labels:
+    app: cloudflared
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+      annotations:
+        # Vault Agent Injector annotations
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "pong"
+        vault.hashicorp.com/agent-inject-secret-token: "secret/data/pong/cloudflare"
+        vault.hashicorp.com/agent-inject-template-token: |
+          {{- with secret "secret/data/pong/cloudflare" -}}
+          {{ .Data.data.tunnel_token }}
+          {{- end -}}
+    spec:
+      serviceAccountName: default
+      containers:
+      - name: cloudflared
+        image: cloudflare/cloudflared:latest
+        command: ["/bin/sh", "-c"]
+        args: ["cloudflared tunnel --no-autoupdate run --token $(cat /vault/secrets/token)"]
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
