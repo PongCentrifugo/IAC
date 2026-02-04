@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
+# Production-specific configurations
+# You can add patches here to override image tags, replica counts, etc.
+# Example:
+# images:
+# - name: public.ecr.aws/docker/library/golang
+#   newName: YOUR_ECR_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/pong-backend
+#   newTag: latest
+
+# patchesStrategicMerge:
+# - replica-patch.yaml
+# - resource-limits-patch.yaml

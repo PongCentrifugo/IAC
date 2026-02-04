@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pong-backend
+  namespace: pong
+  labels:
+    app: pong-backend
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: pong-backend
+  template:
+    metadata:
+      labels:
+        app: pong-backend
+      annotations:
+        # Vault Agent Injector annotations
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "pong"
+        vault.hashicorp.com/agent-inject-secret-env: "secret/data/pong/backend"
+        vault.hashicorp.com/agent-inject-template-env: |
+          {{- with secret "secret/data/pong/backend" -}}
+          export CENTRIFUGO_API_KEY="{{ .Data.data.centrifugo_api_key }}"
+          export CENTRIFUGO_SECRET="{{ .Data.data.centrifugo_secret }}"
+          export REDIS_URL="{{ .Data.data.redis_url }}"
+          {{- end -}}
+    spec:
+      serviceAccountName: default
+      containers:
+      - name: backend
+        image: public.ecr.aws/docker/library/golang:1.22  # Replace with actual ECR image
+        command: ["/bin/sh", "-c"]
+        args: ["source /vault/secrets/env && ./pong-api"]
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        env:
+        - name: PORT
+          value: "8080"
+        - name: CENTRIFUGO_API_URL
+          value: "http://pong-centrifugo:8000/api"
+        - name: TOKEN_TTL
+          value: "15m"
+        - name: REDIS_PUBSUB_PATTERN
+          value: "centrifugo.*"
+        - name: REDIS_PREFIX
+          value: "centrifugo"
+        - name: REDIS_PRESENCE_INTERVAL
+          value: "2s"
+        # Note: CENTRIFUGO_API_KEY, CENTRIFUGO_SECRET, REDIS_URL come from Vault
