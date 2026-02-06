@@ -53,3 +53,13 @@ output "cloudfront_distribution_id" {
   value       = aws_cloudfront_distribution.frontend.id
   description = "CloudFront distribution ID."
 }
+
+output "vault_kms_key_id" {
+  value       = aws_kms_key.vault_unseal.key_id
+  description = "KMS key ID for Vault auto-unseal."
+}
+
+output "vault_iam_role_arn" {
+  value       = aws_iam_role.vault.arn
+  description = "IAM role ARN for Vault pods (IRSA)."
+}
