@@ -69,7 +69,7 @@ spec:
           
           seal "awskms" {
             region     = "eu-south-2"
-            kms_key_id = "KMS_KEY_ID_PLACEHOLDER"  # TODO: Replace with actual KMS key ID from Terraform output
+            kms_key_id = "51fe5478-f629-4b78-947b-ed960a366a4f"  # TODO: Replace with actual KMS key ID from Terraform output
           }
       
       # Persistent storage for data
