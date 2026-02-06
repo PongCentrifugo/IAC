@@ -13,7 +13,7 @@ spec:
   interval: 24h
   url: https://helm.releases.hashicorp.com
 ---
-# HCP Vault Agent Injector only (no Vault server)
+# Self-hosted Vault (single instance) + Vault Agent Injector
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -31,15 +31,18 @@ spec:
         namespace: vault
       interval: 12h
   values:
-    # Disable Vault server (using HCP Vault instead)
+    # Single Vault server instance (no HA for pet project)
     server:
-      enabled: false
-    
-    # Enable only the injector to connect to HCP Vault
-    injector:
       enabled: true
-      replicas: 2
-      externalVaultAddr: "${HCP_VAULT_ADDR}"  # Will be set via Kustomize or ConfigMap
+      
+      # Service account with IAM role annotation for IRSA (KMS access)
+      serviceAccount:
+        create: true
+        name: vault
+        annotations:
+          eks.amazonaws.com/role-arn: "arn:aws:iam::428941813349:role/pong-vault"
+      
+      # Resources for Vault pod
       resources:
         requests:
           memory: 256Mi
@@ -48,5 +51,55 @@ spec:
           memory: 512Mi
           cpu: 500m
       
+      # Standalone mode (single instance)
+      standalone:
+        enabled: true
+        
+        config: |
+          ui = true
+          
+          listener "tcp" {
+            tls_disable = 1
+            address = "[::]:8200"
+          }
+          
+          storage "file" {
+            path = "/vault/data"
+          }
+          
+          seal "awskms" {
+            region     = "eu-south-2"
+            kms_key_id = "KMS_KEY_ID_PLACEHOLDER"  # TODO: Replace with actual KMS key ID from Terraform output
+          }
+      
+      # Persistent storage for data
+      dataStorage:
+        enabled: true
+        size: 10Gi
+        storageClass: gp2
+        accessMode: ReadWriteOnce
+      
+      # Disable audit storage (optional, can enable later)
+      auditStorage:
+        enabled: false
+    
+    # Enable the injector to inject secrets into pods
+    injector:
+      enabled: true
+      replicas: 1
+      
+      resources:
+        requests:
+          memory: 128Mi
+          cpu: 100m
+        limits:
+          memory: 256Mi
+          cpu: 250m
+      
       # Auth path for Kubernetes
       authPath: "auth/kubernetes"
+    
+    # Enable Vault UI
+    ui:
+      enabled: true
+      serviceType: ClusterIP

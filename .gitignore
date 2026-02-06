@@ -1,1 +1,14 @@
-*.md
+# Terraform state and secrets
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+*.md 
+*.sh
+
+# Vault initialization files (contain root tokens and recovery keys)
+vault-init-keys-*.json
+vault-snapshot-*.snap
+
+# Keep markdown documentation files (remove old blanket ignore)
+# Note: Vault secrets are in JSON files above, documentation is safe
