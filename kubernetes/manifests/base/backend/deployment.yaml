@@ -33,7 +33,7 @@ spec:
       - name: backend
         image: public.ecr.aws/docker/library/golang:1.22  # Replace with actual ECR image
         command: ["/bin/sh", "-c"]
-        args: ["source /vault/secrets/env && ./pong-api"]
+        args: [". /vault/secrets/env && ./pong-api"]
         ports:
         - containerPort: 8080
           name: http
