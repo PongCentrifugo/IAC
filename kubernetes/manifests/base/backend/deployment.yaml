@@ -31,7 +31,7 @@ spec:
       serviceAccountName: default
       containers:
       - name: backend
-        image: public.ecr.aws/docker/library/golang:1.22  # Replace with actual ECR image
+        image: 428941813349.dkr.ecr.eu-south-2.amazonaws.com/pong-backend:latest # {"$imagepolicy": "flux-system:backend"}
         command: ["/bin/sh", "-c"]
         args: [". /vault/secrets/env && ./pong-api"]
         ports:

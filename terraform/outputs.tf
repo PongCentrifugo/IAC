@@ -63,3 +63,8 @@ output "vault_iam_role_arn" {
   value       = aws_iam_role.vault.arn
   description = "IAM role ARN for Vault pods (IRSA)."
 }
+
+output "image_reflector_role_arn" {
+  value       = aws_iam_role.image_reflector.arn
+  description = "IAM Role ARN for Flux image-reflector-controller (IRSA)."
+}
