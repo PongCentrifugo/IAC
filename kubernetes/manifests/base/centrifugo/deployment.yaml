@@ -20,8 +20,8 @@ spec:
         # Vault Agent Injector annotations
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "pong"
-        vault.hashicorp.com/agent-inject-secret-config: "secret/data/pong/centrifugo"
-        vault.hashicorp.com/agent-inject-template-config: |
+        vault.hashicorp.com/agent-inject-secret-config.json: "secret/data/pong/centrifugo"
+        vault.hashicorp.com/agent-inject-template-config.json: |
           {{- with secret "secret/data/pong/centrifugo" -}}
           {
             "token_hmac_secret_key": "{{ .Data.data.token_hmac_secret_key }}",
@@ -81,9 +81,9 @@ spec:
           - |
             echo "Waiting for Vault config file..."
             for i in $(seq 1 30); do
-              if [ -f /vault/secrets/config ]; then
+              if [ -f /vault/secrets/config.json ]; then
                 echo "Config file found, starting Centrifugo..."
-                exec centrifugo --config=/vault/secrets/config
+                exec centrifugo --config=/vault/secrets/config.json
               fi
               echo "Attempt $i: Config not found, waiting..."
               sleep 1
