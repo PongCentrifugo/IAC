@@ -72,3 +72,9 @@ variable "budget_alert_email" {
   description = "Email for budget alerts."
   default     = ""
 }
+
+variable "custom_domain" {
+  type        = string
+  description = "Custom domain name for CloudFront distribution (e.g., pong.stabalmo.pro)"
+  default     = ""
+}
