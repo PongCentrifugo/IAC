@@ -30,8 +30,8 @@ spec:
       containers:
       - name: cloudflared
         image: cloudflare/cloudflared:latest
-        command: ["/bin/sh", "-c"]
-        args: ["cloudflared tunnel --no-autoupdate run --token $(cat /vault/secrets/token)"]
+        command: ["cloudflared", "tunnel", "--no-autoupdate", "run"]
+        args: ["--token-file", "/vault/secrets/token"]
         resources:
           limits:
             cpu: 200m
