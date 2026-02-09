@@ -76,8 +76,20 @@ spec:
       containers:
       - name: centrifugo
         image: centrifugo/centrifugo:v5
-        command: ["centrifugo"]
-        args: ["--config=/vault/secrets/config"]
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Waiting for Vault config file..."
+            for i in $(seq 1 30); do
+              if [ -f /vault/secrets/config ]; then
+                echo "Config file found, starting Centrifugo..."
+                exec centrifugo --config=/vault/secrets/config
+              fi
+              echo "Attempt $i: Config not found, waiting..."
+              sleep 1
+            done
+            echo "ERROR: Config file not found after 30 seconds"
+            exit 1
         ports:
         - containerPort: 8000
           name: http
