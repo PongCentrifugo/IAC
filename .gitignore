@@ -3,8 +3,6 @@
 *.tfstate.*
 .terraform/
 *.tfvars
-*.md 
-*.sh
 
 # Vault initialization files (contain root tokens and recovery keys)
 vault-init-keys-*.json
